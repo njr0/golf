@@ -1,0 +1,424 @@
+global DIR "/Users/njr/iNJR/golf"
+
+setq MEDALS (> (length $*) 1)
+setq SCORESFILE (if MEDALS "medals.txt" "scores.txt")
+setq OUTDATASET (if MEDALS "medalscores" "enhancedscores")
+
+css -i /Users/njr/python/artists/miro/extensions/css/sidecontents.css
+if (eval MEDALS)
+    log -rndl -f $DIR/tracker.html on "Race to Broomieknowe 2019"
+fi
+
+load (join-path DIR SCORESFILE)
+if (not (is-fieldname "CSS"))
+    def -t i CSS nil
+fi
+if (not (is-fieldname "Stake"))
+    def Stake 0
+fi
+
+PAR.load $DIR/par.txt
+STROKE.load $DIR/strokeindex.txt
+join -k Tee $PAR
+join -k Tee $STROKE
+format -datefmt eurod Date
+
+if (not (eval MEDALS))
+    select Date >= 2019-01-01
+fi
+compress
+#mv Date TrueDate
+#def Date (string TrueDate t "rd")
+bin -d Date
+
+
+cmd -n  holespark  int n  int ndates
+   setq nn (+ n 1)
+   setq width (* 10 ndates)
+   setv G sparkbar -map $cmap -hscale 3 -gs .8 -yM 3 -ym -2 (field (+ "NNSt" (string n)))
+   g.annotate 0 (- 380 (* n 20) 13) (+ "Hole " (string n))
+   g.place 50 (- 380 (* nn 20)) G
+dmc
+
+
+cmd -n  datespark  int w  string d   int nWeeks
+   setq ww (+ w 1)
+   setv G N.sparkbar -hscale 3 -map $cmap -gs .8 -yM 3 -ym -2 (field (+ "Week" (string w)))
+   g.annotate 0 (- (* (+ nWeeks 1) 20) (* w 20) 13) (string d)
+   g.place 60 (- (* (+ nWeeks 1) 20) (* ww 20)) G
+dmc
+
+
+cmd -n  Handicap2020 player
+    select (= Player player)
+    setq N count
+    setq handicaps (comp (cli "OneHandicap" player i)
+                         (i (... 20 N)))
+    select all
+    return $handicaps
+dmc
+
+
+cmd -n  OneHandicap player n
+    pushsel (and (<= recency n)
+                 (> recency (- n 20)))
+        def scoreRank (rank ToPar -1 f t)
+        setq HandicapDate (max Date)
+        pushsel scoreRank < 9
+            setq H2020 (mean ToPar)
+            setq scores (join " " (comp (string (+ v 70)) (v (values ToPar))))
+        popsel
+        rm scoreRank
+    popsel
+    return (list player HandicapDate H2020 scores)
+dmc
+
+
+# Strokes Received
+(vdef "SR!1" "(+ (<= SI!1 Handicap) (<= (+ SI!1 18) Handicap))" (... 18))
+
+(vdef "h!1" "(if (= H!1 0) nil H!1)" (... 18))
+(vdef "Adj!1" "(if (= H!1 0) (+ Par!1 SR!1 3) H!1)" (... 18))
+
+(loop (cli (+ "mv -f h" (string n) " H" (string n)))
+      (n (... 18)))
+
+
+# Net Score
+(vdef "Net!1" "(if (not (isnull H!1)) (- H!1 SR!1))" (... 18))
+
+# Net Stableford
+(vdef "NSt!1" "(max (nvl (+ (- Par!1 Net!1) 2) 0) 0)" (... 18))
+
+# "Net net" Stableford
+(vdef "NNSt!1" "(- NSt!1 2)" (... 18))
+
+
+# Gross Stableford
+(vdef "GSt!1" "(max (nvl (+ (- Par!1 H!1) 2) 0) 0)" (... 18))
+
+# Colour function (not used)
+
+(defun scorecolour (c) (switch c '(0 "#F67C73")
+                                 '(1 "#F9D9D6")
+                                 '(2 "#FFFFFF")
+                                 '(3 "#C1E1FB")
+                                 '(4 "#48ACFB")
+                                 '(5 "#BAA6D4")
+                                 '(6 "#764BA8")))
+
+
+# (vdef "NC!1" "(scorecolour NSt!1)" (... 18))
+
+# Score class function (not used)
+(defun scoreclass (c) (switch c '(0 "2+ Bogey")
+                                '(1 "Bogey")
+                                '(2 "Par")
+                                '(3 "Birdie")
+                                '(4 "Eagle")
+                                '(5 "Albatross")
+                                '(6 "Double Albatross")))
+
+
+# Bin the Stableford scores (net and gross) and set the colours
+
+bin 0 1 2 3 4 5 NSt# GSt#
+bincolours "#F67C73" "#F9D9D6" "#FFFFFF" "#C1E1FB" "#48ACFB" "#BAA6D4"  "#764BA8" NSt# GSt#
+tag CK=bincolour NSt# GSt# H# Net#
+
+
+fieldcolour white Date Player
+
+# Set the colours for Gross and Net Scores based on Stableford Points
+
+(loop (cli (+ "tag CF=GSt" (string n) " H" (string n)))
+      (n (... 18)))
+
+(loop (cli (+ "tag CF=NSt" (string n) " Net" (string n)))
+      (n (... 18)))
+
+
+# Set Long names to 1-18 for:
+#   Gross scores              H#
+#   Net scores                Net#
+#   Gross Stableford points   GSt#
+#   Net Stableford points     NSt#
+
+(loop (cli (+ "tag L=" (string n) " H" (string n)))
+      (n (... 18)))
+
+(loop (cli (+ "tag L=" (string n) " Net" (string n)))
+      (n (... 18)))
+
+(loop (cli (+ "tag L=" (string n) " NSt" (string n)))
+      (n (... 18)))
+
+(loop (cli (+ "tag L=" (string n) " GSt" (string n)))
+      (n (... 18)))
+
+
+# Calc Gross IN, OUT and TOTAL and set long names
+
+def GrossOut (+ H?)
+def GrossIn (+ H1?)
+def GrossTotal (+ GrossOut GrossIn)
+tag L="OUT" GrossOut
+tag L="IN" GrossIn
+tag L="TOTAL" GrossTotal
+
+def AdjGrossOut (+ Adj?)
+def AdjGrossIn (+ Adj1?)
+def AdjGrossTotal (+ AdjGrossOut AdjGrossIn)
+tag L="OUT" AdjGrossOut
+tag L="IN" AdjGrossIn
+tag L="TOTAL" AdjGrossTotal
+def Adjusted (if (= GrossTotal AdjGrossTotal) "" "yes")
+tag L="Adjusted (NRs)" Adjusted
+fieldcolour red Adjusted
+
+
+# Calc Net IN, OUT and TOTAL and set long names
+
+def NetOut (+ Net?)
+def NetIn (+ Net1?)
+def NetTotal (+ NetOut NetIn)
+tag L="OUT" NetOut
+tag L="IN" NetIn
+tag L="TOTAL" NetTotal
+
+
+# Calc Gross Stableford IN, OUT and TOTAL and set long names
+
+def GStOut (+ GSt?)
+def GStIn (+ GSt1?)
+def GStTotal (+ GStOut GStIn)
+tag L="OUT" GStOut
+tag L="IN" GStIn
+tag L="TOTAL" GStTotal
+
+
+def AdjNetOut (+ AdjGrossOut (- (+ SR?)))
+def AdjNetIn (+ AdjGrossIn (- (+ SR1?)))
+def AdjNetTotal (+ AdjNetOut AdjNetIn)
+tag L="OUT" AdjNetOut
+tag L="IN" AdjNetIn
+tag L="TOTAL" AdjNetTotal
+
+
+# Calc Net Stableford IN, OUT and TOTAL and set long names
+
+def NStOut (+ NSt?)
+def NStIn (+ NSt1?)
+def NStTotal (+ NStOut NStIn)
+tag L="OUT" NStOut
+tag L="IN" NStIn
+tag L="TOTAL" NStTotal
+
+
+# Calc Gross Sixes and set long names
+
+def Gross1-6 (+ H1 H2 H3 H4 H5 H6)
+def Gross7-12 (+ H7 H8 H9 H10 H11 H12)
+def Gross13-18 (+ H13 H14 H15 H16 H17 H18)
+tag L="1 – 6" Gross1-6
+tag L="7 – 12" Gross7-12
+tag L="13 – 18" Gross13-18
+
+# Calc Net Sixes and set long names
+
+def Net1-6 (+ Net?)
+def Net7-12 (+ Net1?)
+def Net13-18 (+ Net1-6 Net7-12)
+tag L="1 – 6" Net1-6
+tag L="7 – 12" Net7-12
+tag L="13 – 18" Net13-18
+
+# Calc Gross Stableford Sixes and set long names
+
+def GSt1-6 (+ GSt?)
+def GSt7-12 (+ GSt1?)
+def GSt13-18 (+ GSt1-6 GSt7-12)
+tag L="1 – 6" GSt1-6
+tag L="7 – 12" GSt7-12
+tag L="13 – 18" GSt13-18
+
+# Calc Net Stableford Sixes and set long names
+
+def NSt1-6 (+ NSt1 NSt2 NSt3 NSt4 NSt5 NSt6)
+def NSt7-12 (+ NSt7 NSt8 NSt9 NSt10 NSt11 NSt12)
+def NSt13-18 (+ NSt13 NSt14 NSt15 NSt16 NSt17 NSt18)
+tag L="1 – 6" NSt1-6
+tag L="7 – 12" NSt7-12
+tag L="13 – 18" NSt13-18
+
+
+fieldcolour white *Out *In *Total *1-6 *7-12 *13-18
+
+tag C=0 H# Net# NSt# GSt#
+
+
+# Calc Gross Score Category Distribution
+
+def GrossDB (apply '+
+                   (comp (= (field (+ "GSt" (string n)))
+                            0)
+                         (n (... 18))))
+tag L="Double Bogey+" GrossDB
+
+def GrossBogey (apply '+
+                      (comp (= (field (+ "GSt" (string n)))
+                               1)
+                            (n (... 18))))
+tag L="Bogey" GrossBogey
+
+
+def GrossPar (apply '+
+                    (comp (= (field (+ "GSt" (string n)))
+                             2)
+                          (n (... 18))))
+tag L="Par" GrossPar
+
+def GrossBirdie (apply '+
+                       (comp (= (field (+ "GSt" (string n)))
+                                3)
+                             (n (... 18))))
+tag L="Birdie" GrossBirdie
+
+def GrossEagle (apply '+
+                      (comp (>= (field (+ "GSt" (string n)))
+                               4)
+                            (n (... 18))))
+tag L="Eagle+" GrossEagle
+
+
+# Calc Net Score Category Distribution
+
+def NetDB (apply '+
+                 (comp (= (field (+ "NSt" (string n)))
+                          0)
+                       (n (... 18))))
+tag L="Double Bogey+" NetDB
+
+def NetBogey (apply '+
+                    (comp (= (field (+ "NSt" (string n)))
+                             1)
+                          (n (... 18))))
+tag L="Bogey" NetBogey
+
+def NetPar (apply '+
+                  (comp (= (field (+ "NSt" (string n)))
+                           2)
+                        (n (... 18))))
+tag L="Par" NetPar
+
+def NetBirdie (apply '+
+                     (comp (= (field (+ "NSt" (string n)))
+                              3)
+                           (n (... 18))))
+tag L="Birdie" NetBirdie
+
+def NetEagle (apply '+
+                    (comp (>= (field (+ "NSt" (string n)))
+                             4)
+                          (n (... 18))))
+tag L="Eagle+" NetEagle
+
+fieldcolour white *Eagle *Birdie *Par *Bogey *DB
+
+
+# Competition
+
+bin -d Date
+def WinningPoints1-6 max NSt1-6 by Date
+def WinningPoints7-12 max NSt7-12 by Date
+def WinningPoints13-18 max NSt13-18 by Date
+def WinningPointsTotal max NStTotal by Date
+
+def Win1-6 (= NSt1-6 WinningPoints1-6)
+def Win7-12 (= NSt7-12 WinningPoints7-12)
+def Win13-18 (= NSt13-18 WinningPoints13-18)
+def WinOverallMatch (= NStTotal WinningPointsTotal)
+
+def NPlayers count by Date
+
+def NWinners1-6 sum Win1-6 by Date
+def NWinners7-12 sum Win7-12 by Date
+def NWinners13-18 sum Win13-18 by Date
+def NWinnersOverallMatch sum WinOverallMatch by Date
+
+def Staked (+ 4.00)
+def MoneyWon1-6 (* Win1-6 (/ NPlayers NWinners1-6))
+def MoneyWon7-12 (* Win7-12 (/ NPlayers NWinners7-12))
+def MoneyWon13-18 (* Win13-18 (/ NPlayers NWinners13-18))
+def MoneyWonOverallMatch (* WinOverallMatch (/ NPlayers NWinnersOverallMatch))
+def MoneyWonTotal (+ MoneyWon*)
+def MoneyWonNet (- MoneyWonTotal Staked)
+
+tag L="Won 1 – 6" MoneyWon1-6
+tag L="Won 7 – 12" MoneyWon7-12
+tag L="Won 13 – 18" MoneyWon13-18
+tag L="Won Overall Match" MoneyWonOverallMatch
+tag L="Won Total"  MoneyWonTotal
+tag L="Won Net" MoneyWonNet
+
+bin -0.1 0.1 MoneyWon*
+bincolours "#F67C73" "#FFFFFF" "#48ACFB" -- MoneyWon*
+#tag CK=bincolour MoneyWon* Win*-* WinOverallMatch NSt*-* NStTotal
+bincolours "#F67C73" "#48ACFB" -- Win*-* WinOverallMatch
+tag CF=Win1-6 NSt1-6
+tag CF=Win7-12 NSt7-12
+tag CF=Win13-18 NSt13-18
+tag CF=WinOverallMatch NStTotal
+
+
+
+format +dps 2 Staked MoneyWon*
+fieldcolour white Staked
+
+
+format -datefmt r-d
+bin -LR -week Date
+#bin Date
+bin -d Date
+#insort -a Date
+
+bin Nick Andy Kenny -- Player
+bincolours C00000 0000C0 00C000 -- Player
+
+. measure Nick
+. measure Kenny
+. measure Andy
+
+bin -d Date
+
+def ToPar (+ (- 36 NStTotal) Handicap)
+sort Player Date
+def roundsByPlayer count by Player
+def recency (- roundsByPlayer (row-index-by Player))
+
+setq header (list (list "Player" "s")
+                  (list "Date" "d")
+                  (list "Handicap" "r")
+                  (list "Scores" "s"))
+setq NickHandicap2020  Handicap2020 Nick
+setq AndyHandicap2020  Handicap2020 Andy
+setq KennyHandicap2020  Handicap2020 Kenny
+setq handicaps (append  NickHandicap2020
+                        AndyHandicap2020
+                        KennyHandicap2020)
+setq HD (dataset header handicaps)
+HD.sort Player Date
+HD.format -datefmt eurod Date
+HD.bin -d Date
+HD.bin Nick Andy Kenny -- Player
+HD.bincolours C00000 0000C0 00C000 -- Player
+
+save (join-path "golf" OUTDATASET)
+
+if (not MEDALS)
+    . -f report
+fi
+
+if (eval MEDALS)
+    log -r -f $DIR/tracker.html off
+fi

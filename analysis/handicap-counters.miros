@@ -1,0 +1,42 @@
+require paths
+
+cmd rank-em  name  initials
+    if (field-exists "Fake")
+        select Fake = 0
+        compress
+    fi
+    format +dps 1 CourseRating *HI* differential
+    def recency (- (n-records) (row-index))
+    def diff2 (+ differential (- 20 (/ (row-index) 100000)))
+    select recency < 21
+    fc white *
+    def rank (rank diff2 1 f t)
+    rm -f Fake diff2
+    fc -t rankred nil rank
+    select all
+    order Date Tee CourseRating Gross Adjusted PCC Adj ForHandicap Informal  AHI HI20 differential recency rank HI
+    format -datefmt r-d Date
+    Section $name
+    tag L="Δ" differential
+    tag L="Recency" recency
+    tag L="Rank" rank
+    tag -v name GROUPHEADER *
+    setv content tail -L -groupheaders Date recency Adjusted differential rank HI 21
+    setv title (+ (upper-case initials) " Counters")
+    set path (join-path GOLF-MDB-DIR (+ initials "-counters.html"))
+    template templates/golf-template.html $path
+dmc
+
+
+load njr/handicap-njr.miro
+rank-em Nick  njr
+
+load njr/handicap-am.miro
+rank-em Andy  am
+
+load njr/handicap-ks.miro
+rank-em Kenny  ks
+
+load njr/handicap-kd.miro
+rank-em Ken  kd
+

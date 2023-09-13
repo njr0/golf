@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<style type="text/css">
+
+.Sans, body {font-family: Geneva, Helvetica, Arial, Verdana, Sans-serif;}
+.separator {margin: 10px 0 10px 0;}
+.miroBanner table {background-color : #303030; color: #FFFFFF;}
+.miroBanner td {border: 0 2px 0 2px}
+.miroBanner a:link {color: #800000; text-decoration: none;}
+.miroBanner a:hover{color: #FF0000; text-decoration: none;}
+.miroBanner a:visited{color: #C00000; text-decoration: none;}
+
+.currentBlob {
+ background-color: #FFFFFF;
+ width: 25px;
+ text-align: center;
+ font-size: x-small;
+}
+.futureBlob {
+ background-color: #FFFFFF;
+ width: 25px;
+ text-align: center;
+ font-size: x-small;
+}
+.nextBlob {
+ background-color: #FFFFFF;
+ font-weight: bold;
+ width: 35px;
+ text-align: center;
+ font-size: medium;
+}
+.pastBlob {
+ background-color: #FFFFFF;
+ width: 25px;
+ text-align: center;
+ font-size: x-small;
+}
+
+ a:link {color: #C00000; text-decoration: none;}
+a:hover {color: #FF0000; text-decoration: none;}
+a:visited{color: #800000; text-decoration: none;}
+
+.TL {background-color: #5D002F; width: 10px; height: 10px}
+.TR {background-color: #CF0000; width: 10px; height: 10px}
+.BL {background-color: #533B45; width: 10px; height: 10px}
+.BR {background-color: #6D0000; width: 10px; height: 10px}
+
+.L1 {background-color: #BA150B;}
+.L2 {background-color: #E17410;}
+.L3 {background-color: #D5A312;}
+.L4 {background-color: #127F17;}
+.L5 {background-color: #168B5E;}
+.L6 {background-color: #1960BE;}
+.L7 {background-color: #6F0DD8;}
+
+.logo2 .L1,.logo2 .L2,.logo2 .L3,.logo2 .L4,.logo2 .L5,.logo2 .L6,.logo2 .L7,.SW {
+ width: 14px;
+ height: 14px;
+}
+.logo3 .L1,.logo3 .L2,.logo3 .L3,.logo3 .L4,.logo3 .L5,.logo3 .L6,.logo3 .L7 {
+ width: 7px;
+ height: 7px;
+}
+
+.cscell {
+ min-width: 50px;
+ height: 20px;
+}
+.csline {
+ width: 100%;
+}
+.cshead {
+ font-weight: bold;
+ padding: 20px 0 20px 0;
+}
+
+.logo td, {
+ border-width: 0;
+ padding: 0;
+}
+.logo2 td {padding: 2px;}
+.logo3 td {padding: 1px;}
+.logo table {
+ border-collapse: collapse;
+ margin-left: 2px;
+}
+.logo2 table {
+  border-top: 2px solid #5B626A;
+  border-bottom: 2px solid #5B626A;
+}
+.logo3 table {
+  border-top: 1px solid #5B626A;
+  border-bottom: 1px solid #5B626A;
+}
+
+ pre.emptycommand, pre.emptynocommand, pre.nocommand {
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+  border: 0 0 0 0;
+}
+pre.command {
+  padding: 0 0 18px 0;
+  margin: 0 0 0 0;
+  border: 0 0 0 0;
+}
+div.p {
+  padding: 12px 0 12px 0;
+}
+
+.truncation {
+ padding: 12px 0px 12px 12px;
+ font-family : Palatino, "Palatino Linotype", Times;
+ font-style: italic;
+ font-size: 12px;
+}
+
+ pre.nocommand, pre.emptynocommand,.suppressed,.anchor {
+  color: #C0C0C0;
+}
+
+.odd {
+ color: #C00000;
+}
+.even {
+ color: #303030;
+}
+
+.tdred {
+ color: #E00000;
+ font-weight: bold;
+}
+.tdgreen {
+ color: #008000;
+}
+.nullgrey {
+ color: #C0C0C0;
+}
+
+.sidehead {
+ font-weight: bold;
+ font-size: Large;
+ padding: 10px 0 10px 0;
+}
+
+.miroError {
+ font-family: Courier, "Courier New", monospace;
+ color: #A00000;
+ font-weight: bold;
+ white-space: pre;
+}
+table.solid, table.tdver {
+    font-family: Helvetica, Arial, Verdana, Sans-serif;
+}
+
+table.padrh {
+ padding-left: 20px;
+}
+table.padrh th {
+ padding: 0px 3px 0px 3px;
+ text-align: right;
+}
+table.padrh td {
+ padding: 0px 3px 0px 3px;
+ font-family: Courier, "Courier New", monospace;
+}
+table.solid, table.light {
+ border-spacing: 0px;
+}
+table.solid, table.solid td, table.solid th, table.solid tr {
+ border-collapse: collapse;
+ border: 1px solid #808080;
+ empty-cells: show;
+}
+
+table.solid td {text-align: right}
+table.nb {border-collapse: separate;}
+table.nb,table.nb td, table.nb th, table.nb tr {border: 0px}
+table.rh td {text-align: right;}
+
+table.clicklist tr td {
+ text-align: left;
+ font-family: Courier, "Courier New", monospace;
+ padding-right: 6px;
+}
+
+tr td.mdl {text-align: left;}
+
+.section-title {page-break-before: always}
+
+.p0 {padding-left: 1ex; padding-right: 1ex}
+.p1 {padding-left: 3ex; padding-right: 3ex}
+.p2 {padding-left: 6ex; padding-right: 6ex}
+.p3 {padding-left: 9ex; padding-right: 9ex}
+.p4 {padding-left: 12ex; padding-right: 12ex}
+.p5 {padding-left: 15ex; padding-right: 15ex}
+.p6 {padding-left: 18ex; padding-right: 18ex}
+.p7 {padding-left: 21ex; padding-right: 21ex}
+.p8 {padding-left: 24ex; padding-right: 24ex}
+
+.help {
+ font-family : Palatino, "Palatino Linotype", Times;
+ color: #303030;
+}
+.help code {
+ color: #006000;
+}
+.help pre {
+ padding: 10px 0px 0px 30px;
+ /*background-color: #F8F8F8;*/
+ line-height: 10px;
+}
+
+.option:hover,.query:hover {
+ text-decoration: underline;
+ color: #A00000;
+}
+.optionslist {
+ font-family: Courier, monospace;
+ font-size: 12pt;
+}
+
+.datefoot {
+ padding-top: 2in;
+ font-size: x-small;
+ color: #808080;
+ width: 100\%;
+}
+.rightfoot {
+ padding-left: auto;
+}
+.rightfoot a:link {
+ color: #808080;
+}
+.rightfoot a:hover {color: #FF0000;}
+
+.hol-title {
+ font-weight: bold;
+ margin-left: auto;
+ margin-right: auto;
+ padding: 5px;
+}
+
+.colsep {
+ width: 0px;
+ background-color: #808080;
+}
+.rowsep {
+ height: 0px;
+ background-color: #808080;
+}
+
+table.tdver, table.tdver td, table.tdver th, table.tdver tr {
+ border-collapse: collapse;
+ border: 1px solid #808080; empty-cells: show;
+}
+
+table.tdver tr td, table.tdvercell {
+ margin-left: auto;
+ margin-right: auto;
+}
+
+table.tdvercell, table.tdvercell td, table.tdvercell th, table.tdvercell tr {
+ border-collapse: collapse;
+ border: 0px solid #808080; empty-cells: show;
+ text-align: center;
+}
+
+table.tdvercell td {
+ font-size: x-large;
+ padding: 3px;
+ font-weight: bold;
+}
+
+table.tdver td {
+ padding: 3px;
+}
+
+.break {
+    padding: 6pt;
+}
+
+.buttons table, .buttons td {
+   border: 2px solid black;
+   border-collapse: collapse;
+   padding: 4px;
+   }
+.buttons {
+    padding-bottom: 10px;
+}
+td.c {
+    text-align: center;
+}
+</style>
+<title>Index</title>
+</head>
+<body>
+  <div class="buttons">
+  <table>
+     <tr>
+       <td><a href="am-handicap.html">Andy Handicap</a></td>
+       <td><a href="kd-handicap.html">Ken Handicap</a></td>
+       <td><a href="ks-handicap.html">Kenny Handicap</a></td>
+       <td><a href="njr-handicap.html">Nick Handicap</td>
+
+     </tr>
+     <tr>
+       <td><a href="am-counters.html">Andy Counters</a></td>
+       <td><a href="kd-counters.html">Ken Counters</a></td>
+       <td><a href="ks-counters.html">Kenny Counters</a></td>
+       <td><a href="njr-counters.html">Nick Counters</td>
+     </tr>
+     %(rounds)s
+  </table>
+</div>
+
+</body>
+</html>

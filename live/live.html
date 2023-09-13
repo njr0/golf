@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Live Scoring</title>
+    <style type="text/css">
+    body {
+        font-family: Helvetica, Sans;
+        font-weight: bold;
+    }
+    td {padding: 3px;}
+    .pad { margin: 0 20px 0 20px;}
+    .t {margin: 6px;}
+    .c {text-align: center;}
+    .ul {
+        padding-top: 4px;
+        border-bottom: 1px solid black;
+    }
+    .L {
+         font-size: 150%;
+         padding: 2px;
+    }
+    .LL {
+        font-size: 150%;
+        padding: 0;
+    }
+    .p8 {padding-top: 8px;}
+    .birdie,
+    .bogey,
+    .par,
+    .double,
+    .eagle
+    {
+        border-radius: 15px;
+        padding: 2px 6px 2px 6px;
+    }
+    .double {
+        background-color: rgba(255, 0, 0, 0.9);
+        color: white;
+    }
+    .bogey {
+        background-color: rgba(255, 0, 0, 0.3);
+    }
+    .birdie {
+        background-color: rgba(0, 0, 255, 0.3);
+    }
+    .eagle {
+        background-color: rgba(0, 0, 255, 0.9);
+        color: white;
+    }
+    .par {
+        background-color: white;
+    }
+    </style>
+  </head>
+  <body>
+  <center>
+  <table class="t c">
+    <col style="width:25%"/>
+    <col style="width:25%"/>
+    <col style="width:25%"/>
+    <col style="width:25%"/>
+  <tr>
+  <td colspan="4" class="c"> ◀ <span class="pad">HOLE 1</span>  ▶ </td>
+  </tr>
+  <tr> <td colspan="4" class="c"> PAR 4 </td> </tr>
+
+  <tr>  <td/> <td>NICK</td>  <td>ANDY</td>  <td>KENNY</td> </tr>
+  <tr>
+      <td></td>
+      <td class="L">➕</td>
+      <td class="L">➕</td>
+      <td class="L">➕</td>
+  </tr>
+  <tr>
+     <td>GROSS</td>
+     <td><span class="birdie">3</span></td>
+     <td><span class="double">6</span></td>
+     <td><span class="par">5</span></td>
+  </tr>
+  <tr>
+       <td></td>
+       <td class="L">➖</td>
+       <td class="L">➖</td>
+       <td class="L">➖</td>
+  </tr>
+  <tr>
+     <td>NET</td>
+     <td><span class="eagle">2</span></td>
+     <td><span class="bogey">5</span></td>
+     <td><span class="par">4</span></td>
+  </tr>
+  <tr> <td>POINTS</td>  <td>4</td>  <td>3</td>  <td>0</td>  </tr>
+
+  <tr> <td colspan="4" class="ul"> </td> </tr>
+  <tr> <td colspan="4" class="p8"> FRONT 6 </td> </tr>
+
+  <tr> <td>GROSS</td>  <td>3</td>  <td>4</td>  <td>6</td>  </tr>
+  <tr> <td>NET</td>  <td>2</td>  <td>3</td>  <td>6</td>  </tr>
+  <tr> <td>ADJUSTED</td>  <td>2</td>  <td>3</td>  <td>6</td>  </tr>
+  <tr> <td>POINTS</td>  <td>4</td>  <td>3</td>  <td>0</td>  </tr>
+
+  <tr> <td colspan="4" class="ul"> </td> </tr>
+  <tr> <td colspan="4" class="p8"> MATCH </td> </tr>
+
+  <tr> <td>GROSS</td>  <td>3</td>  <td>4</td>  <td>6</td>  </tr>
+  <tr> <td>NET</td>  <td>2</td>  <td>3</td>  <td>6</td>  </tr>
+  <tr> <td>ADJUSTED</td>  <td>2</td>  <td>3</td>  <td>6</td>  </tr>
+  <tr> <td>POINTS</td>  <td>4</td>  <td>3</td>  <td>0</td>  </tr>
+
+  </table>
+  </center>
+  </body>
+</html>

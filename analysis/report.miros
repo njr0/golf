@@ -1,0 +1,56 @@
+# Report
+
+Section Competition Graphs
+
+
+Subsection "Net Stableford Points (and Overall Match Result)"
+
+setv G1 x -G -grid -hscale 4 -line -title "Net Stableford Points" -aggnames "Stableford Points" -ym 18 -yM 46 -ny 14 mean NStTotal by Date Player
+G1.line 0 36 100 36
+Setq G (eval G1)
+
+Subsection "Net Stableford Points Front 6 (and Front 6 Match Result)"
+
+setv G2 x -G -grid -hscale 4 -line -title "Net Stableford Points (Front 6)" -aggnames "Stableford Points" -ym 0 -yM 18 -ny 9 mean NSt1-6 by Date Player
+G2.line 0 12 100 12
+Setq G (eval G2)
+
+
+Subsection "Net Stableford Points Middle 6 (and Middle 6 Match Result)"
+
+setv G3 x -G -grid -hscale 4 -line -title "Net Stableford Points (Middle 6)" -aggnames "Stableford Points" -ym 0 -yM 18 -ny 9 mean NSt7-12 by Date Player
+G3.line 0 12 100 12
+Setq G (eval G3)
+
+Subsection "Net Stableford Points Back 6 (and Back 6 Match Result)"
+
+setv G4 x -G -grid -hscale 4 -line -title "Net Stableford Points (Back 6)" -aggnames "Stableford Points" -ym 0 -yM 18 -ny 9 mean NSt13-18 by Date Player
+G4.line 0 12 100 12
+Setq G (eval G4)
+
+
+Subsection Gross Stableford Points
+XTab -G -grid -hscale 4 -line -title "Gross Stableford Points" -aggnames "Stableford Points" -ym 0 -yM 36 -ny 18 mean GStTotal by Date Player
+
+. player Nick
+. player Andy
+. player Kenny
+
+# Section "2020 Handicaps (Projected, using Playing Handicaps)"
+
+# HD.XTab -G -grid -hscale 4 -line -title "Handicap 2020" -aggnames "Handicap Handicap" -ym 0 -yM 28 -ny 14 mean Handicap by Date Player
+
+# HD.select Player = Andy
+# format -colours
+# HD.tag L="Adj. Scores" Scores
+# HD.setq AH show -aL
+# HD.select -r Player = Kenny
+# HD.setq KH show -aL
+# HD.select -r Player = Nick
+# HD.setq NH show -aL
+# HD.sel all
+# HD.Setq S (horizontal-output-list AH " " KH " " NH align: "top")
+
+
+# Subsection Competition
+# Show -t -aL Player Date NSt1-6 NSt7-12 NSt13-18 NStTotal MoneyWon1-6 MoneyWon7-12 MoneyWon13-18 MoneyWonOverallMatch MoneyWonTotal Staked MoneyWonNet

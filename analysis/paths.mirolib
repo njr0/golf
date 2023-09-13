@@ -1,0 +1,4 @@
+global GOLF-MDB-DIR "~/iNJR/golf/microdb"
+global SVG-DIR (join-path GOLF-MDB-DIR "svg")
+mkdir -p $SVG-DIR
+

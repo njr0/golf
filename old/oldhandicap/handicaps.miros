@@ -1,0 +1,30 @@
+log -rnd -f ~/iNJR/golf/handicaps.html on "Handicaps"
+load ~/iNJR/golf/NickHandicaps.csv
+def mi (/ (+ (* 8 handicap_index) (* 12 antihandicap_index)) 20)
+bin -d date
+x -r -R H -D "HI" any handicap_index by date
+x -r -R A -D "HI" any antihandicap_index by date
+x -r -R MEAN -D "HI" any mi by date
+x -r -R MEDIAN -D "HI" any median_adj_to_par by date
+H.def kind "Handicap Index"
+A.def kind "Antihandicap Index"
+MEAN.def kind "Mean Score Differential"
+MEDIAN.def kind "Median Score Differential"
+
+data H
+append $MEDIAN
+append $MEAN
+append $A
+def Date (date date)
+format -datefmt r-d
+bin -d Date
+bin kind
+binsort -d -r kind
+bincolour Green kind "Handicap Index"
+bincolour Red kind "Antihandicap Index"
+bincolour Blue kind "Mean Score Differential"
+bincolour Indigo kind "Median Score Differential"
+tag L=" " kind Date
+Xtab -G -grid -hscale 1.2 -L -ym 20 -yM 30 -ny 10 -line -t "Handicap Indexes" -aggnames "Index" mean HI by Date kind
+
+

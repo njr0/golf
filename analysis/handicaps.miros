@@ -1,0 +1,11 @@
+load ~/iNJR/golf/NickHandicaps.csv
+bin -d date
+x -r -R H "HI" any handicap_index by date
+x -r -R A "HI" any antihandicap_index by date
+H.def kind 'HI'
+A.def kind 'AHI'
+H.append $A
+H.bin -d date
+x -G any HI by date kind
+
+

@@ -1,0 +1,98 @@
+global DIR "/Users/njr/iNJR/golf"
+select (= Player $1)
+bin -d Date
+
+x -r -D "Score NNSt" -R R1 any H1 any NNSt1 by Date
+R1.def Hole 1
+
+x -r -D "Score NNSt" -R R2 any H2 any NNSt2 by Date
+R2.def Hole 2
+
+x -r -D "Score NNSt" -R R3 any H3 any NNSt3 by Date
+R3.def Hole 3
+
+x -r -D "Score NNSt" -R R4 any H4 any NNSt4 by Date
+R4.def Hole 4
+
+x -r -D "Score NNSt" -R R5 any H5 any NNSt5 by Date
+R5.def Hole 5
+
+x -r -D "Score NNSt" -R R6 any H6 any NNSt6 by Date
+R6.def Hole 6
+
+x -r -D "Score NNSt" -R R7 any H7 any NNSt7 by Date
+R7.def Hole 7
+
+x -r -D "Score NNSt" -R R8 any H8 any NNSt8 by Date
+R8.def Hole 8
+
+x -r -D "Score NNSt" -R R9 any H9 any NNSt9 by Date
+R9.def Hole 9
+
+x -r -D "Score NNSt" -R R10 any H10 any NNSt10 by Date
+R10.def Hole 10
+
+x -r -D "Score NNSt" -R R11 any H11 any NNSt11 by Date
+R11.def Hole 11
+
+x -r -D "Score NNSt" -R R12 any H12 any NNSt12 by Date
+R12.def Hole 12
+
+x -r -D "Score NNSt" -R R13 any H13 any NNSt13 by Date
+R13.def Hole 13
+
+x -r -D "Score NNSt" -R R14 any H14 any NNSt14 by Date
+R14.def Hole 14
+
+x -r -D "Score NNSt" -R R15 any H15 any NNSt15 by Date
+R15.def Hole 15
+
+x -r -D "Score NNSt" -R R16 any H16 any NNSt16 by Date
+R16.def Hole 16
+
+x -r -D "Score NNSt" -R R17 any H17 any NNSt17 by Date
+R17.def Hole 17
+
+x -r -D "Score NNSt" -R R18 any H18 any NNSt18 by Date
+R18.def Hole 18
+
+setq R (eval R1)
+R.append $R2
+R.append $R3
+R.append $R4
+R.append $R5
+R.append $R6
+R.append $R7
+R.append $R8
+R.append $R9
+R.append $R10
+R.append $R11
+R.append $R12
+R.append $R13
+R.append $R14
+R.append $R15
+R.append $R16
+R.append $R17
+R.append $R18
+R.def Player (+ $1)
+R.order Date Player Hole Score NNSt
+R.select (not (= (length Date) 1))
+R.compress
+
+setq path (join-path DIR (+ $1 ".csv"))
+R.save $path
+select all
+
+R.bin Date
+R.bin -d Hole
+R.binsort -a Date
+R.setq names (comp (+ "Week" (string n))
+                   (n (... (length (bin-labels Date)))))
+R.setq autonames (comp (+ "anyNNSt-" L)
+                       (L (bin-labels Date)))
+R.x -r -R N -d any NNSt by Date Hole
+(loop (cli (+ "N.mv " a " " n))
+      (a autonames) (n names))
+setq path (join-path DIR (+ $1 "-net-by-week.csv"))
+N.save $path
+

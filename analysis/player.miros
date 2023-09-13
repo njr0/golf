@@ -1,0 +1,74 @@
+global DIR "/Users/njr/iNJR/golf"
+Section $1
+
+select (= Player $1)
+
+Subsection "Gross Scores (with NR = net triple bogey)"
+Show -aL Date Player H? AdjGrossOut H1? AdjGrossIn AdjGrossTotal Adjusted
+
+format -colours
+X mean H#
+X sd H#
+format +colours
+
+P.load (join-path DIR (+ $1 ".csv"))
+P.format +datefmt rd
+P.bin -d Date
+P.bin -d Hole
+P.Xtab -G -E -point -grid -aggnames "Score" -t "Average Score by Hole" -ym 0 -yM 8 -ny 8 mean Score by Hole
+P.Xtab -G -bar -t "Breakdown of Score by Hole" count by Hole Score
+
+
+Subsection "Gross Stableford Scores"
+Show -aL Date Player GSt? GStOut GSt1? GStIn GStTotal
+
+Subsection "Gross Score Distribution"
+Show -aL Date Player GrossEagle GrossBirdie GrossPar GrossBogey GrossDB
+
+
+Subsection "Net Score (with NR = net triple bogey)"
+Show -aL Date Player Net? AdjNetOut Net1? AdjNetIn AdjNetTotal
+
+format -colours
+X mean Net#
+X sd Net#
+format +colours
+
+
+Subsection "Net Stableford Scores"
+Show -aL Date Player NSt? NStOut NSt1? NStIn NStTotal
+
+Subsubsection "Stableford Sparklines (Hole-by-Hole)"
+
+setq cmap (alist '(3 "0000FF") '(2 "4040FF") '(1 "8080FF")
+                 '(-1 "FF8080") '(-2 "FF4040"))
+
+setq ndates count  # number of dates
+setq g graphic (* 10 ndates) 400
+(loop (cli "holespark" n ndates)
+      (n (... 18)))
+g.Show
+
+Subsubsection "Stableford Sparklines (by Round)"
+
+N.load (join-path DIR (+ $1 "-net-by-week.csv"))
+N.format +datefmt rd
+bin -d Date
+setq dates (bin-labels Date)
+N.setq nWeeks (length dates)
+
+setq g graphic 200 (* 20 nWeeks)
+(loop (cli "datespark" w  d nWeeks)
+      (w (... nWeeks)) (d dates))
+g.Show
+
+
+
+
+
+
+Subsection "Net Score Distribution by Category"
+Show -t -aL Player Date NetEagle NetBirdie NetPar NetBogey NetDB
+
+select all
+

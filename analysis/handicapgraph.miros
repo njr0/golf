@@ -1,0 +1,15 @@
+load medalhandicaps.csv
+bin -d Date
+format -datefmt r-d Date
+bin Nick Andy Kenny -- Player
+bincolours C00000 0000C0 00C000 -- Player
+X -G -line -ps .2 -grid -t "WHS Handicap by Date" -aggnames "WHS Handicap" any Handicap2020Out by Date Player
+
+#select Date >= (date "2017-01-01")
+select Handicap2020Out -
+bin -d Date
+#X -G -line -ps .2 -grid -t "WHS Handicap by Date" -aggnames "WHS Handicap" any Handicap2020Out by Date Player
+
+X -G -line -xl 3 -hscale .4 -ps .2 -grid -t "WHS Handicap by Date" -aggnames "WHS Handicap" any Handicap2020Out by Date Player
+
+select all
