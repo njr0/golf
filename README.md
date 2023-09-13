@@ -1,0 +1,2 @@
+# golf
+Python golf code
