@@ -171,6 +171,7 @@ class LiveRound:
         self.is_ios = sys.platform == 'ios'
         config = config or Config()
         self.iCloudRoundDataDir = config.round_data_dir
+        self.dir = config.local_round_data_dir
         self.ensure_dir_exists()
         self.saved = False
         self.date = date or get_date(self.dir)
@@ -226,13 +227,6 @@ class LiveRound:
             return os.path.join(directory, f'{self.date}.json')
         else:
             return os.path.join(directory, f'{self.date}-{kind}.csv')
-
-    @property
-    def dir(self):
-        if 'linux' not in sys.platform:
-            return os.path.join(os.path.expanduser('~'), 'Documents', 'golf')
-        else:
-            return ''  # server, for the moment
 
     def ensure_dir_exists(self):
         if self.dir and not os.path.isdir(self.dir):

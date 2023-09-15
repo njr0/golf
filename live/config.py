@@ -36,11 +36,12 @@ ICLOUD_ROUND_DATA_DIR = os.path.join(ICLOUD_DIR, DATA_SUBDIR)
 if 'linux' in sys.platform:
     TRACKER_DIR = MICRODB_TRACKER_DIR
     ROUND_DATA_DIR = MICRODB_ROUND_DATA_DIR
+    LOCAL_ROUND_DATA_DIR = MICRODB_ROUND_DATA_DIR
 else:
     TRACKER_DIR = ICLOUD_TRACKER_DIR
     # TRACKER_DIR = MAC_TRACKER_DIR  # for now
     ROUND_DATA_DIR = ICLOUD_ROUND_DATA_DIR
-
+    LOCAL_ROUND_DATA_DIR = os.path.expanduser('~/Documents/golf')
 
 
 class Config:
@@ -56,6 +57,7 @@ class Config:
             self.round_data_dir = ROUND_DATA_DIR
         self.index_template_path = INDEX_TEMPLATE_PATH
         self.index_path = os.path.join(self.tracker_dir, 'index.html')
+        self.local_round_data_dir = LOCAL_ROUND_DATA_DIR
 
     def __str__(self):
         return 'Config(\n%s\n)' % '\n'.join(
