@@ -57,3 +57,6 @@ class Config:
         self.index_template_path = INDEX_TEMPLATE_PATH
         self.index_path = os.path.join(self.tracker_dir, 'index.html')
 
+    def __str__(self):
+        return 'Config(\n%s\n)' % '\n'.join(
+                   f'    {k}: {v}' for (k, v) in self.__dict__.items())
