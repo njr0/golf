@@ -744,7 +744,6 @@ def write_index(config, dates):
 
 def update_tracker(mac_microdb=False, **kwargs):
     config = Config(mac_microdb)
-    print(config)
     race = [
     ]
     files = os.listdir(config.round_data_dir)
