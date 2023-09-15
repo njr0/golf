@@ -214,7 +214,7 @@ class LiveRound:
 
     def path(self, kind='json', icloud=None):
         icloud = nvl(icloud, self.icloud)
-        if icloud:
+        if icloud and not 'linux' in sys.platform:
             # This expands to the data subdir of Pythonista 3
             # on both Mac and iOS
             directory = self.iCloudRoundDataDir
