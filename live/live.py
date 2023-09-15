@@ -229,10 +229,13 @@ class LiveRound:
 
     @property
     def dir(self):
-        return os.path.join(os.path.expanduser('~'), 'Documents', 'golf')
+        if 'linux' not in sys.platform:
+            return os.path.join(os.path.expanduser('~'), 'Documents', 'golf')
+        else:
+            return ''  # server, for the moment
 
     def ensure_dir_exists(self):
-        if not os.path.isdir(self.dir):
+        if self.dir and not os.path.isdir(self.dir):
             os.makedirs(self.dir)
 
     def save(self, kind='json', icloud=None):
