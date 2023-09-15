@@ -13,27 +13,22 @@ if sys.platform == 'ios':
 from artists.giacometti.csn import CSReal, CSInt, CSVal
 from artists.giacometti.table import Table, Cell
 
-if sys.platform == 'ios':
-    from courses import Courses
-    from live import LiveRound
-    from round import fromisoformat
-    from config import (
-        TRACKER_DIR,
-        ROUND_DATA_DIR,
-        INDEX_TEMPLATE_PATH,
-        INDEX_PATH,
-    )
-    from players import KnownPlayers
+# if sys.platform == 'ios':
+#     from courses import Courses
+#     from live import LiveRound
+#     from round import fromisoformat
+#     from config import (
+#         TRACKER_DIR,
+#         ROUND_DATA_DIR,
+#         INDEX_TEMPLATE_PATH,
+#         INDEX_PATH,
+#     )
+#     from players import KnownPlayers
 
 from golf.live.courses import Courses
 from golf.live.live import LiveRound
 from golf.live.round import fromisoformat
-from golf.live.config import (
-    TRACKER_DIR,
-    ROUND_DATA_DIR,
-    INDEX_TEMPLATE_PATH,
-    INDEX_PATH,
-)
+from golf.live.config import Config
 from golf.live.players import KnownPlayers
 
 RE = r'^(\d{4}-\d{2}-\d{2})\.json$'
@@ -738,23 +733,23 @@ def round_link(datestr):
 <a href="Tracker-{datestr}.html">Tracker {datestr}</a></td></tr>'''
 
 
-def write_index(dates):
-    with open(INDEX_TEMPLATE_PATH) as f:
+def write_index(config, dates):
+    with open(config.index_template_path) as f:
         template = f.read().replace('%;', '%%;')
     rounds = '\n'.join(round_link(d) for d in dates)
-    with open(INDEX_PATH, 'w') as f:
+    with open(config.index_path, 'w') as f:
         f.write(template % locals())  # uses rounds
-    print('index.html', INDEX_PATH)
+    print('index.html', config.index_path)
 
 
-
-def update_tracker(**kwargs):
+def update_tracker(mac_microdb=False, **kwargs):
+    config = Config(mac_microdb)
     race = [
     ]
-    files = os.listdir(ROUND_DATA_DIR)
-    if not os.path.isdir(TRACKER_DIR):
-        os.makedirs(TRACKER_DIR)
-        print(f'Created {TRACKER_DIR}.')
+    files = os.listdir(config.round_data_dir)
+    if not os.path.isdir(config.tracker_dir):
+        os.makedirs(config.tracker_dir)
+        print(f'Created {config.tracker_dir}.')
     round_files = [f for f in sorted(files) if re.match(RE, f)]
     dates = [re.match(RE, f).group(1) for f in round_files]
     rounds = {
@@ -765,17 +760,28 @@ def update_tracker(**kwargs):
 
     for k, v in rounds.items():
         d = fromisoformat(k)
-        theround = LiveRound(d, icloud=True)
+        theround = LiveRound(d, icloud=True, config=config)
         tracker = Tracker(theround, race)
         stem = 'Tracker' if tracker.n_racers > 1 else 'Round'
-        outpath = os.path.join(TRACKER_DIR, f'{stem}-{k}.html')
+        outpath = os.path.join(config.tracker_dir, f'{stem}-{k}.html')
         print(d, outpath)
         with open(outpath, 'w') as f:
             f.write(tracker.table.toHTML())
     dates = list(sorted({str(r.date) for r in race}))
 
-    write_index(dates)
+    write_index(config, dates)
+
+
+def update_microdb_tracker(**kwargs):
+    return update_tracker(mac_microdb=True, **kwargs)
 
 
 if __name__ == '__main__':
-     update_tracker()
+    if len(sys.argv) != 1:
+        if not len(sys.argv) == 2 or not sys.argv[1] == '-m':
+            print('USAGE: python tracker.py [-m]', file=sys.stderr)
+            sys.exit(1)
+        mac_microdb = True
+    else:
+        mac_microdb = False
+    update_tracker(mac_microdb)

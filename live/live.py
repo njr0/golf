@@ -18,7 +18,12 @@ from golf.live.players import (
     KnownPlayers, is_known, update_known_players
 )
 
-from golf.live.config import ROUND_DATA_DIR
+from golf.live.config import Config
+try:
+    from microdb.shell import Shell
+    from microdb.parser import Command
+except ImportError:
+    Shell = Command = None
 
 
 HELP = '''Q:     Quit
@@ -159,11 +164,13 @@ def get_allowance(s=''):
 
 
 class LiveRound:
-    def __init__(self, date=None, icloud=False, desc='', bogey=False):
+    def __init__(self, date=None, icloud=False, desc='', bogey=False,
+                 config=None):
         interactive = date is None
         self.icloud = icloud
         self.is_ios = sys.platform == 'ios'
-        self.iCloudRoundDataDir = ROUND_DATA_DIR
+        config = config or Config()
+        self.iCloudRoundDataDir = config.round_data_dir
         self.ensure_dir_exists()
         self.saved = False
         self.date = date or get_date(self.dir)
@@ -245,12 +252,36 @@ class LiveRound:
                 raise Exception(f'Unknown kind {kind}')
             # print(f'Round written to {path}.')
 
-    def save_all(self, icloud=None):
+    def save_all(self, icloud=None, microdb=False):
         icloud = nvl(icloud, self.icloud)
         self.save('json', icloud)
         # self.save('tall', icloud)
         # self.save('wide', icloud)
         self.saved = True
+        msgs = ['Saved to iCloud.' if icloud else '']
+        if microdb:
+            if Shell:
+                localpath = self.path('json', icloud=False)
+                localfile = os.path.basename(localpath)
+                shell = Shell('default')
+                cmd = Command('rcp',
+                              localpath=localpath,
+                              remotepath=os.path.join('golf/data/',
+                                                      localfile))
+                r = shell.do_rcp(cmd)
+                if r.status == 200:
+                    msgs.append('Uploaded to MicroDB OK')
+                    cmd = Command('act', action='tracker')
+                    r = shell.do_act(cmd)
+                    if r.status == 200:
+                        msgs.append('Tracker regenerated.')
+                    else:
+                        msgs.append(f'*** Failed to regenerate tracker: {r}')
+                else:
+                    msgs.append(f'*** Failed to uploaded to MicroDB: {r}')
+            else:
+                msgs.append('*** No MicroDB shell available.')
+        return '\n'.join(msgs)
 
     def load(self, require_today=True):
         with open(self.path()) as f:
@@ -329,9 +360,9 @@ class LiveRound:
             elif line == 'R':
                 self.print_round_summary()
             elif line == 'U':
-                self.save_all(icloud=True)
+                msg = self.save_all(icloud=True, microdb=True)
                 self.print_summary()
-                print('Uploaded')
+                print(msg)
             return False
         elif line.startswith('HI'):
             L = line[2:].strip()
