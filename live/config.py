@@ -33,7 +33,7 @@ ICLOUD_DIR = (IOS_ICLOUD_BASE_DIR if sys.platform == 'ios'
                                   else MAC_ICLOUD_BASE_DIR)
 ICLOUD_ROUND_DATA_DIR = os.path.join(ICLOUD_DIR, DATA_SUBDIR)
 
-if sys.platform == 'linux':
+if 'linux' in sys.platform:
     TRACKER_DIR = MICRODB_TRACKER_DIR
     ROUND_DATA_DIR = MICRODB_ROUND_DATA_DIR
 else:
@@ -48,7 +48,7 @@ class Config:
         # If mac_microdb is set to true, building the tracker
         # on the mac reads from the mac tracker data dir
         # and writes to the mac tracker dir
-        if mac_microdb:
+        if mac_microdb and 'linux' not in sys.platform:
             self.tracker_dir = MAC_TRACKER_DIR
             self.round_data_dir = MAC_ROUND_DATA_DIR
         else:
