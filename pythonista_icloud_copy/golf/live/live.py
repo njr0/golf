@@ -89,11 +89,13 @@ def get_real(s):
         return None
 
 
-def get_course():
+def get_course(key=None):
     courses = list(Courses)
     default = courses[0]
+    if key:
+        return Courses.get(key, None)
     course_key = get_line('Course', default).upper()
-    while not course_key in courses:
+    while not course_key in courses and prompt:
         print('  '.join(f'{i} {c}' for i, c in enumerate(courses, 1)))
         course_key = get_line('Course', default).upper()
         if course_key.isdigit() and int(course_key) <= len(courses):
@@ -153,73 +155,104 @@ def get_hi():
 
 
 def get_allowance(s=''):
-    a = s.replace('%', '')
-    allowance = (int(a) / 100) if a.isdigit() else 0
-    while not (0 < allowance <= 1):
-        a = get_line('Allowance', '100%').replace('%', '')
-        if a.isdigit():
-            allowance = int(a) / 100
+    allowance = parse_allowance(s)
+    while allowance is None:
+        allowance = parse_allowance(get_line('Allowance', '100%'))
     print(f'Allowance: {allowance * 100:.0f}%')
     return allowance
+    
+
+def parse_allowance(s=''):
+    """Returns allowance if s is a valid allowance; otherwise None"""
+    a = s.replace('%', '')
+    allowance = (int(a) / 100) if a.isdigit() else None
+    return allowance if (allowance is not None and 0.0 <= allowance <= 1.0) else None
 
 
 class LiveRound:
-    """
-        Attributes:
-
-        next_hole:      next hole to be played or updated
-        n_players:      number of players (1-4)
-        saved:          whether has been saved to iCloud
-
-        date:           round date (datetime.date)
-        desc:           round description
-        course:         Course object
-
-        players:        dictionary keyed on player initials, mapping to Player objects
-        rounds:         dictionary keys on player initials, mapping to Round objects
-
-        players_list:   list of players. Same as list(rounds.values)
-        rounds_list:    list of rounds. Same as list(rounds.values)
-
-
-    """
     def __init__(self, date=None, icloud=False, desc='', bogey=False,
-                 config=None):
+                 config=None, gui=False):
         interactive = date is None
         self.icloud = icloud
+        self.gui = gui
         self.is_ios = sys.platform == 'ios'
         config = config or Config()
         self.iCloudRoundDataDir = config.round_data_dir
         self.dir = config.local_round_data_dir
         self.ensure_dir_exists()
         self.saved = False
-        self.date = date or get_date(self.dir)
         self.desc = desc
         self.bogey = bogey
+        self.next_hole = 1
+        self.course = None
+        self.allowance = None
+        
+        if gui:
+            self.setup_match()
+            return
+
+        self.date = date or get_date(self.dir)
+
         if os.path.exists(self.path()):
             self.load(require_today=interactive)
-        else:
+        else: 
             self.course = get_course()
-            self.course.allowance = get_allowance()
-            player_initials = get_players()
-            for p in player_initials:
+            self.course.allowance = self.allownace = get_allowance()
+            initials = get_players()
+            for p in initials:
                 if not is_known(p):
                     name, HI = get_player_details(p)
                     KnownPlayers[p] = Player(name, p, HI)
-            self.players_list = [KnownPlayers[p] for p in player_initials]
-            self.rounds_list = [Round(player, self.course, self.date)
-                                for player in self.players_list]
-            self.make_dicts(player_initials)
+            self.build_player_datastructures(initials)
             self.print_players_summary()
-
-            self.next_hole = 1
             self.desc, self.bogey = get_desc(self.course)
-            self.n_players = len(self.players_list)
+ 
         done = False
         while interactive and not done:
             done = self.get_command()
             self.save_all()
-
+            
+    def build_player_datastructures(self, initials):
+        self.players_list = [KnownPlayers[p] for p in initials]
+        self.rounds_list = [Round(player, self.course, self.date)
+                            for player in self.players_list]
+        self.build_dicts(initials)
+        self.n_players = len(self.players_list)
+        
+    def set_course(self, key):
+        self.course = get_course(key)
+        
+    def set_players(self, initials):
+        knowns = list(KnownPlayers.keys())
+        if len(initials) > 0 and all(player in knowns for player in initials):
+            self.build_player_datastructures(initials)
+            
+    def set_player(self, n, initials):
+        player = KnownPlayers.get(initials)
+        if player:
+            # set player n (indexed from 1) to the player with initials given
+            pass
+                     
+    def set_allowance_str(self, s):
+        allowance = parse_allowance(s)  # will be null if invalid
+        if allowance:
+            self.allowance = allowance
+            if self.course:
+                self.course.allowance = allowance
+                
+    def set_date(self, dt):
+        self.date = dt.date()
+                        
+    def ready(self):
+        """Returns True iff the round has been set up OK"""
+        return all(
+            self.date,
+            getattr(self, 'players_list', None),
+            getattr(self, 'course', None),
+            0 < self.n_players < 5,
+            getattr(self.course, 'allowance', None)
+        )
+            
     def print_players_summary(self):
         print()
         for p in self.players.values():
@@ -344,7 +377,7 @@ class LiveRound:
             'bogey': self.bogey,
         }
 
-    def get_command(self):
+    def get_command(self, line=None):
         i = self.next_hole - 1
         actuals = [rnd.holes[i].gross for rnd in self.rounds.values()]
         if all(a is None for a in actuals):
@@ -355,11 +388,14 @@ class LiveRound:
             square = False
         default = ' '.join(str(e) for e in expected)
         nl = '\n'
-        try:
-            line = get_line(f'{nl}Hole {self.next_hole}',
-                            default, square).upper()
-        except EOFError:
-            sys.exit(0)
+        if line is None:
+            try:
+                line = get_line(f'{nl}Hole {self.next_hole}',
+                                default, square).upper()
+            except EOFError:
+                sys.exit(0)
+        else:
+            line = line.upper() or default
         if line in ('Q', 'P', 'N', 'L', 'S', 'R', 'H', '?', 'U', 'HELP'):
             if line == 'Q':
                 return True
@@ -421,11 +457,14 @@ class LiveRound:
                               scores=True))
             return False
         elif line.startswith('A'):
-            self.course.allowance = get_allowance(line[1:].strip())
+            self.allowance = self.course.allowance = get_allowance(line[1:].strip())
             return False
         elif line.startswith('T'):
             self.desc, self.bogey = get_desc(self.course, line[1:].strip())
             return False
+        elif line.startswith('I'):
+            self.launch()
+            
 
         s_scores = line.split()
         if len(s_scores) == 1 and self.n_players > 1:

@@ -80,34 +80,6 @@ class Player:
 
 
 class Hole:
-    """
-    NOTE: All lists have hole 1 as the first entry, i.e. hole n is at position (n - 1)
-
-    Attributes:
-        player:             The player
-        tee:                Tee object, describing the course from a named set of tees (e.g. White)
-
-        hole_number:        The number of the hole, 1-18
-        par:                Par of the hole
-        si:                 Stroke index of the hole
-        strokes:            Number of strokes the player gets on this hole
-
-        *: Items below marked * can be None, indicating a No Return (or possibly DNP)
-
-        gross:*             Strokes taken on the hole
-        nett:*              Net score on the hole (gross - strokes)
-        adj:                Adjusted score after throwing away strokes over gross double bogey
-        adj_nett:           Adjusted nett score after throwing away strokes over nett double bogey
-        nett_stableford:    Stableford points (handicapped)
-        gross_stableford:   Stableford points (gross, i.e. unhandicapped)
-        gross_diff:*        Strokes over gross par (negative for birdies etc.)
-        net_diff:*          Strokes over net par (negative for nett birdies etc.)
-        adj_nett_diff:      Adjusted strokes over net par (2 if net diff is None)
-
-        gross_bogey:        1 for birdies and better, 0 for par, -1 for bogeys and worse
-        nett_bogey:         1 for nett birdies and better, 0 for nett par, -1 for nett bogeys and worse
-
-    """
     SAVE_KEYS = ('hole_number', 'gross', 'nett', 'adj', 'adj_nett',
                  'nett_stableford', 'gross_stableford', 'gross_desc',
                  'gross_stableford', 'gross_diff', 'nett_diff',
