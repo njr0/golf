@@ -175,8 +175,10 @@ class LiveRound:
         desc:           round description
         course:         Course object
 
-        players:        dictionary keyed on player initials, mapping to Player objects
-        rounds:         dictionary keys on player initials, mapping to Round objects
+        players:        dictionary keyed on player initials,
+                        mapping to Player objects
+        rounds:         dictionary keys on player initials,
+                        mapping to Round objects
 
         players_list:   list of players. Same as list(rounds.values)
         rounds_list:    list of rounds. Same as list(rounds.values)
@@ -193,6 +195,8 @@ class LiveRound:
         self.dir = config.local_round_data_dir
         self.ensure_dir_exists()
         self.saved = False
+        if type(date) == datetime.datetime:
+            date = date.date  # extract date component
         self.date = date or get_date(self.dir)
         self.desc = desc
         self.bogey = bogey
@@ -302,28 +306,44 @@ class LiveRound:
     def load(self, require_today=True):
         with open(self.path()) as f:
             d = json.load(f)
+            if type(d.get('date', None)) == datetime.datetime:
+                d['date'] = d['date'].date
         if require_today:
             assert d['date'] == self.date
-        self.course = Tee(**d['course'])
+        course_dict = d.get('course', d.get('course_tee'))
+        if 'allowance' in d:
+            course_dict['allowance'] = d['allowance']
+        self.course = Tee(**course_dict)
         self.rounds_list = rounds_list = []
-        self.players_list = [Player(**p) for p in d['players']]
-        p0 = d['players'][0]
-        if 'round' in p0:
-            # new format
-            for i, player in enumerate(self.players_list):
+        if 'players' in d:
+            self.players_list = [Player(**p) for p in d['players']]
+            p0 = d['players'][0]
+            if 'round' in p0:
+                # new format
+                for i, player in enumerate(self.players_list):
+                    rounds_list.append(
+                            Round(player, self.course, self.date,
+                                  scores=d['players'][i]['round']['gross']))
+            else:
+                # old format
+                self.rounds_list = [Round(player, self.course, self.date,
+                                          scores=rnd['gross'])
+                                    for (player, rnd) in zip(self.players_list,
+                                                             d['rounds'])]
+        elif 'rounds' in d:
+            self.players_list = [Player(**r['player']) for r in d['rounds']]
+            for player, r in zip(self.players_list, d['rounds']):
                 rounds_list.append(
-                        Round(player, self.course, self.date,
-                              scores=d['players'][i]['round']['gross']))
+                    Round(player, self.course, self.date,
+                          scores=r['gross_scores']))
         else:
-            # old format
-            self.rounds_list = [Round(player, self.course, self.date,
-                                      scores=rnd['gross'])
-                                for (player, rnd) in zip(self.players_list,
-                                                         d['rounds'])]
+            raise Exception('No rounds')
         self.make_dicts([p.initials for p in self.players_list])
-        self.next_hole = d['next_hole']
-        self.desc = d.get('desc', '')
+        self.next_hole = d.get('next_hole', d.get('current_hole'))
+        self.desc = d.get('desc', d.get('description', ''))
         self.bogey = d.get('bogey', False)
+        if d.get('competitions', False):
+            self.bogey = 'bogey' in [c.lower() for c in d.get('competitions')]
         sixes = d.get('sixes', [1, 2])
         if not isinstance(sixes, list) or len(sixes) != 2:
             sixes = [1, 2]
@@ -336,11 +356,11 @@ class LiveRound:
             p['round'] = r
         return {
             'date': self.date,
-            'course': flatten(self.course),
+            'course_tee': flatten(self.course),
             'desc': self.desc,
             'players': players,
             'next_hole': self.next_hole,
-            'desc': self.desc,
+            'description': self.desc,
             'bogey': self.bogey,
         }
 

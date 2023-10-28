@@ -62,3 +62,16 @@ class Config:
     def __str__(self):
         return 'Config(\n%s\n)' % '\n'.join(
                    f'    {k}: {v}' for (k, v) in self.__dict__.items())
+
+
+if __name__ == '__main__':
+    from pprint import pprint as pp
+    if len(sys.argv) != 1:
+        if not len(sys.argv) == 2 or not sys.argv[1] == '-m':
+            print('USAGE: python config.py [-m]', file=sys.stderr)
+            sys.exit(1)
+        mac_microdb = True
+    else:
+        mac_microdb = False
+    config = Config(mac_microdb=mac_microdb)
+    pp(config.__dict__)
