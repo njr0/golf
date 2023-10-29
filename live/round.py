@@ -18,13 +18,18 @@ DATE_RE = re.compile(r'^([0-9]{4})-?([0-9]{2})-?([0-9]{2})$')
 
 class Tee:
     def __init__(self, course_name, tee_name, course_rating, slope_rating,
-                 par, SI, allowance=1.0, names=None, lengths=None):
+                 par=None, SI=None, allowance=1.0, names=None, lengths=None,
+                 stroke_indexes=None, pars=None, colour=None):
         self.course_name = course_name
         self.tee_name = tee_name
         self.course_rating = course_rating
         self.slope_rating = slope_rating
-        self.par = par
-        self.SI = SI
+        self.par = par or pars
+        self.SI = SI or stroke_indexes
+        if not self.par:
+            raise Exception('No pars specified')
+        if not self.SI:
+            raise Excception('No stroke indexes specified')
         self.allowance = allowance
         self.names = names
         self.lengths = lengths
@@ -62,6 +67,8 @@ class Tee:
 
 class Player:
     def __init__(self, name, initials, HI, round=None):  # round is ignored
+        if name in('Nick Radcliffe', 'Andy McGlone', 'Kenny Sargent'):
+            name = name.split(' ')[0]
         self.name = name
         self.initials = initials
         self.HI = HI
