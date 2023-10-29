@@ -143,7 +143,7 @@ def main(player, s):
 
 
 if __name__=='__main__':
-    knowns = players = ('njr', 'am', 'ks', 'kd')
+    knowns = players = ('njr', 'am', 'ks')  # , 'kd')
     if len(sys.argv) == 2:
         players = []
         for p in sys.argv[1:]:

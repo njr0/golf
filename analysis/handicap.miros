@@ -3,6 +3,6 @@ set player (. $* 1)
          "No player specified")
 setq tsv (join-path GOLF-MDB-DIR "rounds" (+ "handicap-" player ".tsv"))
 load -t $tsv
-select ForHandicap = 1
-compress
+# select ForHandicap = 1
+# compress
 def differential (round (* (- Adjusted CourseRating PCC) (/ 113 SlopeRating)) 1)

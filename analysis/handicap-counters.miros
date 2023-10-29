@@ -14,7 +14,7 @@ cmd rank-em  name  initials
     rm -f Fake diff2
     fc -t rankred nil rank
     select all
-    order Date Tee CourseRating Gross Adjusted PCC Adj ForHandicap Informal  AHI HI20 differential recency rank HI
+    order Date Tee CourseRating Gross Adjusted PCC Adj AHI HI20 differential recency rank HI
     format -datefmt r-d Date
     Section $name
     tag L="Δ" differential
@@ -37,6 +37,6 @@ rank-em Andy  am
 load njr/handicap-ks.miro
 rank-em Kenny  ks
 
-load njr/handicap-kd.miro
-rank-em Ken  kd
+# load njr/handicap-kd.miro
+# rank-em Ken  kd
 

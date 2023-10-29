@@ -6,7 +6,7 @@ handicap:
 	# miro handicap-counters
 
 upload:
-	scp $(GOLF_MDB_DIR)/index.html $(GOLF_MDB_DIR)/*-counters.html $(GOLF_MDB_DIR)/*-handicap.html $(GOLF_MDB_DIR)/Tracker.pdf $(GOLF_MDB_DIR)/Tracker*.html microdb:/microdb/static/golf
+	scp  $(GOLF_MDB_DIR)/*-counters.html $(GOLF_MDB_DIR)/*-handicap.html microdb:/microdb/static/golf
 
 
 combined:
