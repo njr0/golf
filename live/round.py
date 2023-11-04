@@ -66,7 +66,7 @@ class Tee:
 
 
 class Player:
-    def __init__(self, name, initials, HI, round=None):  # round is ignored
+    def __init__(self, name, initials, HI, round=None, **kw):  # round is ignored
         if name in('Nick Radcliffe', 'Andy McGlone', 'Kenny Sargent'):
             name = name.split(' ')[0]
         self.name = name
