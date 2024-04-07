@@ -284,7 +284,7 @@ class Tracker:
                         'Bounce' in self.theround.desc
                         or 'Medal' in self.theround.desc
                         or 'Spoon' in self.theround.desc
-                   ) else 0
+                   ) else 2 if 'Final' in self.theround.desc else 0
 
     def add_top_header(self):
         self.table[0][0] = TopHeaderCell(self.theround.desc,
@@ -593,9 +593,10 @@ class Tracker:
             self.winnings[p] = money
             fmtd = CSReal(money, prefix=POUNDS)
             table[ROW.SIX_TOTAL][col] = BCell(money, formatted=fmtd)
-            fmtd = CSReal(self.stake, prefix=POUNDS)
-            table[ROW.SIX_STAKED][col] = Cell(self.stake, formatted=fmtd)
-            net = money - self.stake
+            fmtd = CSReal(self.stake * self.rtg, prefix=POUNDS)
+            table[ROW.SIX_STAKED][col] = Cell(self.stake * self.rtg,
+                                              formatted=fmtd)
+            net = money - self.stake * self.rtg
             fmtd = CSReal(net, prefix=POUNDS, long_minus=True)
             styles = ['b'] + (['neg'] if net < 0 else [])
             table[ROW.SIX_NET][col] = Cell(net, formatted=fmtd, styles=styles)
