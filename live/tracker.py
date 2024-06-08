@@ -34,7 +34,7 @@ from golf.live.players import KnownPlayers
 RE = r'^(\d{4}-\d{2}-\d{2})\.json$'
 
 
-START_OF_RACE_STR = '2023-04-01'
+START_OF_RACE_STR = '2024-04-01'
 
 BASE_SLOPE = 113
 POUNDS = '£'
@@ -180,7 +180,7 @@ class COL:
 
 
 class C:
-    YEAR = 2023
+    YEAR = 2024
 #    STAKE = 5.0
 
 
@@ -593,7 +593,7 @@ class Tracker:
             self.winnings[p] = money
             fmtd = CSReal(money, prefix=POUNDS)
             table[ROW.SIX_TOTAL][col] = BCell(money, formatted=fmtd)
-            fmtd = CSReal(self.stake, prefix=POUNDS)
+            fmtd = CSReal(self.stake * self.rtg, prefix=POUNDS)
             table[ROW.SIX_STAKED][col] = Cell(self.stake * self.rtg,
                                               formatted=fmtd)
             net = money - self.stake * self.rtg
