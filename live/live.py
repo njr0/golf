@@ -46,7 +46,7 @@ JSON_FILE_RE = r'^[0-9]{4}-[0-9]{2}-[0-9]{2}.json$'
 MIN_HCAP = -10.0
 MAX_HCAP = 54.0
 
-
+FIRST_CR_LESS_PAR_DATE = datetime.date(2024, 6, 1)
 
 
 def get_line(prompt='', default='', square=True):
@@ -313,6 +313,7 @@ class LiveRound:
         course_dict = d.get('course', d.get('course_tee'))
         if 'allowance' in d:
             course_dict['allowance'] = d['allowance']
+        course_dict['use_cr_less_par'] = date >= FIRST_CR_LESS_PAR_DATE
         self.course = Tee(**course_dict)
         self.rounds_list = rounds_list = []
         if 'players' in d:

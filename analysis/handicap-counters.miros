@@ -37,6 +37,6 @@ rank-em Andy  am
 load njr/handicap-ks.miro
 rank-em Kenny  ks
 
-# load njr/handicap-kd.miro
-# rank-em Ken  kd
+load njr/handicap-dm.miro
+rank-em Douglas  dm
 

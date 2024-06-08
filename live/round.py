@@ -19,7 +19,8 @@ DATE_RE = re.compile(r'^([0-9]{4})-?([0-9]{2})-?([0-9]{2})$')
 class Tee:
     def __init__(self, course_name, tee_name, course_rating, slope_rating,
                  par=None, SI=None, allowance=1.0, names=None, lengths=None,
-                 stroke_indexes=None, pars=None, colour=None):
+                 stroke_indexes=None, pars=None, colour=None,
+                 use_cr_less_par=True):
         self.course_name = course_name
         self.tee_name = tee_name
         self.course_rating = course_rating
@@ -33,6 +34,7 @@ class Tee:
         self.allowance = allowance
         self.names = names
         self.lengths = lengths
+        self.use_cr_less_par = use_cr_less_par
 
     def __str__(self):
         par = sum(self.par)
@@ -58,7 +60,15 @@ class Tee:
         return f'{self.allowance * 100:.0f}%'
 
     def hcap(self, exact):
-        return int(round(exact * self.slope_rating / BASE * self.allowance))
+        return int(round(exact * self.slope_rating / BASE * self.allowance
+                         + self.cr_less_par))
+
+    @property
+    def cr_less_par(self):
+        if self.use_cr_less_par:
+            return self.course_rating - sum(self.par)
+        else:
+            return 0.0
 
 
     def to_dict(self):

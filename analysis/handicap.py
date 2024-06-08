@@ -124,9 +124,9 @@ def main(player, s):
         set x2 (+ x2 50)
     fi
     setq g x -L -G -line -ps .1 -grid -hscale $hs -vscale 2 -hover -clabels -la -1 -ym 0 -yM 36 -ny 36 -t "{name} Handicap Index, HI20, and AntiHandicap Index" -aggnames "HI" mean v any label by date Kind
-    g.annotate -prb -textscale 2 98 96 (+ "AHI:  " (string FinalAHI dps: 1))
-    g.annotate -prb -textscale 2 98 90 (+ "HI20:  " (string FinalHI20 dps: 1))
-    g.annotate -prb -textscale 2 98 84 (+ "HI:  " (string FinalHI dps: 1))
+    g.annotate -prb -textscale 2 99 96 (+ "AHI:  " (string FinalAHI dps: 1))
+    g.annotate -prb -textscale 2 99 90 (+ "HI20:  " (string FinalHI20 dps: 1))
+    g.annotate -prb -textscale 2 99 84 (+ "HI:  " (string FinalHI dps: 1))
 
     g.annotate -prb -textscale 2 $x2 96 (+ "White:  " (string WhiteHI))
     g.annotate -prb -textscale 2 $x2 90 (+ "Yellow:  " (string YellowHI))
@@ -143,7 +143,7 @@ def main(player, s):
 
 
 if __name__=='__main__':
-    knowns = players = ('njr', 'am', 'ks')  # , 'kd')
+    knowns = players = ('njr', 'am', 'ks', 'dm')
     if len(sys.argv) == 2:
         players = []
         for p in sys.argv[1:]:
