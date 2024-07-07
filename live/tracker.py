@@ -785,7 +785,7 @@ USAGE = '''USAGE:
 
 if __name__ == '__main__':
     if len(sys.argv) != 1:
-        if not len(sys.argv) == 2 or not sys.argv[1] == '-m':
+        if not len(sys.argv) == 2 or not sys.argv[1] in ('-m', '-n'):
             print(USAGE, file=sys.stderr)
             sys.exit(1)
         mac_microdb = sys.argv[1] == '-m'
