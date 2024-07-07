@@ -318,7 +318,7 @@ class LiveRound:
                 except:
                     print(333)
                     pass
-        print(444, d['date'], type(d['date'])
+        print(444, d['date'], type(d['date']))
         if require_today:
             assert d['date'] == self.date
         course_dict = d.get('course', d.get('course_tee'))
