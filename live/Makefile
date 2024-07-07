@@ -4,7 +4,9 @@ GOLF_MDB_DIR=/Users/njr/iNJR/golf/microdb
 .PHONY: all tracker upload
 
 tracker:
-	$(PYTHON) tracker.py
+	$(PYTHON) tracker.py -n
+	sudo cp ~/tracker/* /microdb/static/golf
+	sudo chown apache /microdb/static/golf/*
 
 upload:
 	scp -i /Users/njr/.ssh/microdb_cline_id_rsa $(GOLF_MDB_DIR)/index.html \
