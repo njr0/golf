@@ -314,11 +314,12 @@ class LiveRound:
                 try:
                     print(222)
                     dt = datetime.datetime.fromisoformat(d[date])
+                    print(333)
                     d['date'] = dt.date()
                 except:
-                    print(333)
+                    print(444)
                     pass
-        print(444, d['date'], type(d['date']))
+        print(555, d['date'], type(d['date']))
         if require_today:
             assert d['date'] == self.date
         course_dict = d.get('course', d.get('course_tee'))
