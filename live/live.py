@@ -312,7 +312,9 @@ class LiveRound:
                 d['date'] = d['date'].date()
             elif type(d.get('date', None)) == str:
                 print(222)
-                dt = datetime.datetime.fromisoformat(d['date'])
+                dt = datetime.datetime.fromisoformat(d['date']).replace(' ',
+                                                                        'T')
+                dt = datetime.datetime.strptime(dt, '%Y-%m-%dT%H:%M:%S')
                 print(333)
                 d['date'] = dt.date()
         print(555, d['date'], type(d['date']))
