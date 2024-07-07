@@ -306,14 +306,21 @@ class LiveRound:
     def load(self, require_today=True):
         with open(self.path()) as f:
             d = json.load(f)
-            if type(d.get('date', None)) == datetime.datetime:
+            if type(d.get('date', None)) == datetime.datetime:  # Can't be,
+                                                                # Can it?
                 d['date'] = d['date'].date
+            elif type(d.get('date', None)) == str:
+                try:
+                    dt = datetime.datetime.isoparse(d[date])
+                    d['date'] = dt.date
+                except:
+                    pass
         if require_today:
             assert d['date'] == self.date
         course_dict = d.get('course', d.get('course_tee'))
         if 'allowance' in d:
             course_dict['allowance'] = d['allowance']
-        course_dict['use_cr_less_par'] = date >= FIRST_CR_LESS_PAR_DATE
+        course_dict['use_cr_less_par'] = d['date'] >= FIRST_CR_LESS_PAR_DATE
         self.course = Tee(**course_dict)
         self.rounds_list = rounds_list = []
         if 'players' in d:
