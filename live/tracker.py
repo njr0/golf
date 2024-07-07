@@ -743,8 +743,8 @@ def write_index(config, dates):
     print('index.html', config.index_path)
 
 
-def update_tracker(mac_microdb=False, **kwargs):
-    config = Config(mac_microdb)
+def update_tracker(mac_microdb=False, njr=False, **kwargs):
+    config = Config(mac_microdb, njr)
     race = [
     ]
     files = os.listdir(config.round_data_dir)
@@ -777,12 +777,20 @@ def update_microdb_tracker(**kwargs):
     return update_tracker(mac_microdb=True, **kwargs)
 
 
+USAGE = '''USAGE:
+    python tracker.py [-m] [-n]
+        Use -n if running as njr on microdb
+        Use -m if running on mac
+'''
+
 if __name__ == '__main__':
     if len(sys.argv) != 1:
         if not len(sys.argv) == 2 or not sys.argv[1] == '-m':
-            print('USAGE: python tracker.py [-m]', file=sys.stderr)
+            print(USAGE, file=sys.stderr)
             sys.exit(1)
-        mac_microdb = True
+        mac_microdb = sys.argv[1] == '-m'
+        njr = sys.argv[1] == '-n'
     else:
         mac_microdb = False
-    update_tracker(mac_microdb)
+        njr = False
+    update_tracker(mac_microdb, njr)

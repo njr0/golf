@@ -26,6 +26,7 @@ MAC_ROUND_DATA_DIR = '/Users/njr/root/microdb/static/golf/data'
 
 MICRODB_TRACKER_DIR = '/microdb/static/golf'
 MICRODB_ROUND_DATA_DIR = '/microdb/static/golf/data'
+NJR_TRACKER_DIR = '/home/njr/tracker'
 
 # Platform Dependent
 
@@ -45,7 +46,7 @@ else:
 
 
 class Config:
-    def __init__(self, mac_microdb=False):
+    def __init__(self, mac_microdb=False, njr=False):
         # If mac_microdb is set to true, building the tracker
         # on the mac reads from the mac tracker data dir
         # and writes to the mac tracker dir
@@ -53,7 +54,7 @@ class Config:
             self.tracker_dir = MAC_TRACKER_DIR
             self.round_data_dir = MAC_ROUND_DATA_DIR
         else:
-            self.tracker_dir = TRACKER_DIR
+            self.tracker_dir = NJR_TRACKER_DIR if njr else TRACKER_DIR
             self.round_data_dir = ROUND_DATA_DIR
         self.index_template_path = INDEX_TEMPLATE_PATH
         self.index_path = os.path.join(self.tracker_dir, 'index.html')
@@ -67,8 +68,8 @@ class Config:
 if __name__ == '__main__':
     from pprint import pprint as pp
     if len(sys.argv) != 1:
-        if not len(sys.argv) == 2 or not sys.argv[1] == '-m':
-            print('USAGE: python config.py [-m]', file=sys.stderr)
+        if not len(sys.argv) == 2 or not sys.argv[1] in ('-m', '-n'):
+            print('USAGE: python config.py [-m] [-n]', file=sys.stderr)
             sys.exit(1)
         mac_microdb = True
     else:
