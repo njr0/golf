@@ -311,14 +311,10 @@ class LiveRound:
                 print(111)
                 d['date'] = d['date'].date()
             elif type(d.get('date', None)) == str:
-                try:
-                    print(222)
-                    dt = datetime.datetime.fromisoformat(d[date])
-                    print(333)
-                    d['date'] = dt.date()
-                except:
-                    print(444)
-                    pass
+                print(222)
+                dt = datetime.datetime.fromisoformat(d[date])
+                print(333)
+                d['date'] = dt.date()
         print(555, d['date'], type(d['date']))
         if require_today:
             assert d['date'] == self.date
