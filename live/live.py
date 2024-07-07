@@ -308,13 +308,17 @@ class LiveRound:
             d = json.load(f)
             if type(d.get('date', None)) == datetime.datetime:  # Can't be,
                                                                 # Can it?
+                print(111)
                 d['date'] = d['date'].date
             elif type(d.get('date', None)) == str:
                 try:
-                    dt = datetime.datetime.isoparse(d[date])
+                    print(222)
+                    dt = datetime.datetime.fromisoformat(d[date])
                     d['date'] = dt.date
                 except:
+                    print(333)
                     pass
+        print(444, d['date'), type(d['date'])
         if require_today:
             assert d['date'] == self.date
         course_dict = d.get('course', d.get('course_tee'))
