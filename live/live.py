@@ -309,12 +309,12 @@ class LiveRound:
             if type(d.get('date', None)) == datetime.datetime:  # Can't be,
                                                                 # Can it?
                 print(111)
-                d['date'] = d['date'].date
+                d['date'] = d['date'].date()
             elif type(d.get('date', None)) == str:
                 try:
                     print(222)
                     dt = datetime.datetime.fromisoformat(d[date])
-                    d['date'] = dt.date
+                    d['date'] = dt.date()
                 except:
                     print(333)
                     pass
